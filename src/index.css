@@ -1,3 +1,10 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+  --color-art-dark: #0a0a0a;
+  --color-art-dark-card: #141414;
+  --color-art-gold: #C9A84C;
+  --color-art-gold-light: #E8D48B;
+  --font-serif: "Playfair Display", Georgia, serif;
+  --font-sans: "Inter", system-ui, sans-serif;
+}
