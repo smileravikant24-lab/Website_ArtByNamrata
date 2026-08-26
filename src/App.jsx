@@ -7,6 +7,7 @@ import logoImg from './assets/logo.png';
 export default function App() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [failedImages, setFailedImages] = useState({});
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
@@ -17,7 +18,7 @@ export default function App() {
   const artworks = [
     { id: 1, title: "Abstract Whispers", medium: "Watercolor on Paper", img: "https://images.unsplash.com/photo-1541961017774-22349e4a1262?q=80&w=800&auto=format&fit=crop" },
     { id: 2, title: "Ocean's Depth", medium: "Acrylic on Canvas", img: "https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?q=80&w=800&auto=format&fit=crop" },
-    { id: 3, title: "Golden Hour", medium: "Oil Pastel", img: "https://images.unsplash.com/photo-1578301978693-85fa9c026f33?q=80&w=800&auto=format&fit=crop" },
+    { id: 3, title: "Golden Hour", medium: "Oil Pastel", img: "https://images.unsplash.com/photo-1500462918059-b1a0cb512f1d?q=80&w=800&auto=format&fit=crop" },
     { id: 4, title: "Urban Soul", medium: "Pencil Sketch", img: "https://images.unsplash.com/photo-1579783901586-d88db74b4fe4?q=80&w=800&auto=format&fit=crop" },
   ];
 
@@ -192,11 +193,22 @@ export default function App() {
               viewport={{ once: true }}
               className="group relative overflow-hidden rounded-2xl cursor-pointer bg-art-dark-card"
             >
-              <img
-                src={art.img}
-                alt={art.title}
-                className="w-full h-[350px] md:h-[500px] object-cover transition-transform duration-700 group-hover:scale-105"
-              />
+              {failedImages[art.id] ? (
+                <div className="w-full h-[350px] md:h-[500px] flex flex-col items-center justify-center gap-4 bg-gradient-to-br from-art-dark-card to-black">
+                  <Palette size={32} className="text-art-gold/40" />
+                  <div className="text-center px-6">
+                    <h3 className="text-2xl font-serif text-white">{art.title}</h3>
+                    <p className="text-art-gold text-sm mt-1 tracking-wide">{art.medium}</p>
+                  </div>
+                </div>
+              ) : (
+                <img
+                  src={art.img}
+                  alt={art.title}
+                  onError={() => setFailedImages((prev) => ({ ...prev, [art.id]: true }))}
+                  className="w-full h-[350px] md:h-[500px] object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+              )}
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-8">
                 <h3 className="text-2xl font-serif text-white">{art.title}</h3>
                 <p className="text-art-gold text-sm mt-1 tracking-wide">{art.medium}</p>
