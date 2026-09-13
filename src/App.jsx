@@ -132,23 +132,6 @@ export default function App() {
     window.location.hash = href.slice(1);
   };
 
-  const activeArtwork = activeImage && categories
-    .find((category) => category.id === activeImage.categoryId)?.images[activeImage.index];
-
-  const emailArtwork = () => {
-    if (!activeArtwork) return;
-    const subject = `Artwork enquiry: ${activeArtwork.title}`;
-    const body = [
-      `Hello Namrata,`,
-      '',
-      `I am interested in: ${activeArtwork.title}`,
-      `Image link: ${activeArtwork.img}`,
-      '',
-      message || 'Please share more details about this artwork.',
-    ].join('\n');
-    window.location.href = `mailto:${siteConfig.contactEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-  };
-
   const emailContact = (event) => {
     event.preventDefault();
     const subject = `New website enquiry from ${contactName || 'a visitor'}`;
@@ -323,25 +306,22 @@ export default function App() {
           <div className="lightbox" role="dialog" aria-modal="true" aria-label={`${category.title} preview`} onClick={() => setActiveImage(null)}>
             <button type="button" className="lightbox-close" onClick={() => setActiveImage(null)} aria-label="Close image preview"><X size={24} /></button>
             <button type="button" className="lightbox-arrow lightbox-arrow-left" onClick={(event) => { event.stopPropagation(); changeImage(-1); }} aria-label="Previous image"><ArrowLeft size={24} /></button>
-            <figure className="lightbox-figure" onClick={(event) => event.stopPropagation()}>
+            <div className="lightbox-content" onClick={(event) => event.stopPropagation()}>
               <img src={art.img} alt={art.title} />
-              <figcaption><span>{category.title}</span><strong>{art.title}</strong></figcaption>
-              <div className="artwork-inquiry">
+              <div className="lightbox-panel">
+                <div className="lightbox-caption"><span>{category.title}</span><strong>{art.title}</strong></div>
                 <textarea
                   value={message}
                   onChange={(event) => setMessage(event.target.value)}
-                  placeholder="Write your enquiry or custom request..."
+                  placeholder="Write your message..."
                   aria-label="Artwork enquiry message"
                   rows="3"
                 />
-                <button type="button" className="inquiry-button" onClick={emailArtwork}>
-                  <Mail size={17} /> Email this artwork
-                </button>
                 <a className="inquiry-instagram" href={siteConfig.instagramMessageUrl} target="_blank" rel="noreferrer">
                   Message on Instagram
                 </a>
               </div>
-            </figure>
+            </div>
             <button type="button" className="lightbox-arrow lightbox-arrow-right" onClick={(event) => { event.stopPropagation(); changeImage(1); }} aria-label="Next image"><ArrowRight size={24} /></button>
           </div>
         );
