@@ -227,7 +227,7 @@ export default function App() {
           <img
             src={siteConfig.logoUrl}
             alt={siteConfig.brandName}
-            className="brand-logo brand-logo-hero w-64 md:w-80 mx-auto mb-10 drop-shadow-2xl"
+            className="brand-logo brand-logo-hero w-72 md:w-96 mx-auto mb-10 drop-shadow-2xl"
           />
           <p className="text-lg md:text-xl text-gray-400 font-light leading-relaxed max-w-xl mx-auto">
             Where every stroke tells a story, and colors breathe life into emotions.
