@@ -26,10 +26,11 @@ body {
 
 .brand-logo-hero {
   width: min(27rem, 72vw) !important;
-  height: auto;
+  height: min(27rem, 72vw) !important;
   padding: 0;
   aspect-ratio: 1;
   border-radius: 50%;
+  clip-path: circle(50% at 50% 50%);
   background: #f8f6f0;
   object-fit: contain;
   box-shadow: 0 0 0 3px rgba(232, 212, 139, 0.78), 0 20px 60px rgba(0, 0, 0, 0.42);
