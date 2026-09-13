@@ -259,6 +259,12 @@ body {
   width: 100%;
 }
 
+.contact-status {
+  margin: 0;
+  color: #e8d48b;
+  font-size: 0.85rem;
+}
+
 .lightbox-close,
 .lightbox-arrow {
   position: absolute;
@@ -294,6 +300,11 @@ body {
 }
 
 @media (max-width: 640px) {
+  .home-hero::before,
+  .home-hero::after {
+    display: none;
+  }
+
   .lightbox {
     display: flex;
     flex-direction: column;

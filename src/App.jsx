@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { Palette, PenTool, BookOpen, Scissors, Mail, ChevronDown, Menu, X, ArrowLeft, ArrowRight } from 'lucide-react';
+import { Palette, PenTool, BookOpen, Scissors, Menu, X, ArrowLeft, ArrowRight, Send } from 'lucide-react';
 import './App.css';
 import { sectionImages } from './data/imageConfig';
 import { loadFolderImages } from './data/driveFolders';
@@ -16,6 +16,7 @@ export default function App() {
   const [message, setMessage] = useState('');
   const [contactName, setContactName] = useState('');
   const [contactMessage, setContactMessage] = useState('');
+  const [contactStatus, setContactStatus] = useState('');
 
   const changeImage = useCallback((direction) => {
     if (!activeImage) return;
@@ -132,11 +133,32 @@ export default function App() {
     window.location.hash = href.slice(1);
   };
 
-  const emailContact = (event) => {
+  const submitContact = async (event) => {
     event.preventDefault();
-    const subject = `New website enquiry from ${contactName || 'a visitor'}`;
-    const body = `Name: ${contactName || 'Not provided'}\n\nMessage:\n${contactMessage || 'Please contact me about your artwork services.'}`;
-    window.location.href = `mailto:${siteConfig.contactEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    if (!siteConfig.contactSheetEndpoint) {
+      setContactStatus('Form is temporarily unavailable.');
+      return;
+    }
+
+    setContactStatus('Sending...');
+    try {
+      await fetch(siteConfig.contactSheetEndpoint, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({
+          name: contactName.trim(),
+          message: contactMessage.trim(),
+          page: window.location.href,
+          submittedAt: new Date().toISOString(),
+        }),
+      });
+      setContactName('');
+      setContactMessage('');
+      setContactStatus('Thanks, your message has been submitted.');
+    } catch {
+      setContactStatus('Something went wrong. Please try again.');
+    }
   };
 
   return (
@@ -228,14 +250,6 @@ export default function App() {
           </div>
         </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.5, duration: 1 }}
-          className="absolute bottom-10 animate-bounce"
-        >
-          <ChevronDown size={28} className="text-art-gold/60" />
-        </motion.div>
       </section>}
 
       {/* Gallery Section */}
@@ -384,7 +398,7 @@ export default function App() {
           <p className="text-gray-400 mb-8 max-w-md mx-auto">
             Have a project in mind? Let's bring your vision to life.
           </p>
-          <form className="contact-form" onSubmit={emailContact}>
+          <form className="contact-form" onSubmit={submitContact}>
             <input
               value={contactName}
               onChange={(event) => setContactName(event.target.value)}
@@ -398,7 +412,8 @@ export default function App() {
               aria-label="Your message"
               rows="4"
             />
-            <button type="submit" className="inquiry-button"><Mail size={17} /> Send enquiry by email</button>
+            <button type="submit" className="inquiry-button"><Send size={17} /> Submit message</button>
+            {contactStatus && <p className="contact-status" role="status">{contactStatus}</p>}
           </form>
           <div className="flex justify-center gap-5 mb-10">
             <a
@@ -417,13 +432,6 @@ export default function App() {
               className="contact-instagram-link"
             >
               Message on Instagram
-            </a>
-            <a
-              href={`mailto:${siteConfig.contactEmail}`}
-              className="w-11 h-11 rounded-full border border-white/10 flex items-center justify-center text-gray-400 hover:text-art-gold hover:border-art-gold/40 transition-all duration-300"
-              aria-label="Email"
-            >
-              <Mail size={18} />
             </a>
           </div>
           <p className="text-gray-600 text-xs tracking-wider uppercase">
