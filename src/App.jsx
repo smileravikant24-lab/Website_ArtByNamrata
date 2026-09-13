@@ -14,6 +14,8 @@ export default function App() {
   const [activeImage, setActiveImage] = useState(null);
   const [activePage, setActivePage] = useState(window.location.hash.slice(1) || 'home');
   const [message, setMessage] = useState('');
+  const [contactName, setContactName] = useState('');
+  const [contactMessage, setContactMessage] = useState('');
 
   const changeImage = useCallback((direction) => {
     if (!activeImage) return;
@@ -144,6 +146,13 @@ export default function App() {
       '',
       message || 'Please share more details about this artwork.',
     ].join('\n');
+    window.location.href = `mailto:${siteConfig.contactEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  };
+
+  const emailContact = (event) => {
+    event.preventDefault();
+    const subject = `New website enquiry from ${contactName || 'a visitor'}`;
+    const body = `Name: ${contactName || 'Not provided'}\n\nMessage:\n${contactMessage || 'Please contact me about your artwork services.'}`;
     window.location.href = `mailto:${siteConfig.contactEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   };
 
@@ -328,6 +337,9 @@ export default function App() {
                 <button type="button" className="inquiry-button" onClick={emailArtwork}>
                   <Mail size={17} /> Email this artwork
                 </button>
+                <a className="inquiry-instagram" href={siteConfig.instagramMessageUrl} target="_blank" rel="noreferrer">
+                  Message on Instagram
+                </a>
               </div>
             </figure>
             <button type="button" className="lightbox-arrow lightbox-arrow-right" onClick={(event) => { event.stopPropagation(); changeImage(1); }} aria-label="Next image"><ArrowRight size={24} /></button>
@@ -392,6 +404,22 @@ export default function App() {
           <p className="text-gray-400 mb-8 max-w-md mx-auto">
             Have a project in mind? Let's bring your vision to life.
           </p>
+          <form className="contact-form" onSubmit={emailContact}>
+            <input
+              value={contactName}
+              onChange={(event) => setContactName(event.target.value)}
+              placeholder="Your name"
+              aria-label="Your name"
+            />
+            <textarea
+              value={contactMessage}
+              onChange={(event) => setContactMessage(event.target.value)}
+              placeholder="Write your message or project details..."
+              aria-label="Your message"
+              rows="4"
+            />
+            <button type="submit" className="inquiry-button"><Mail size={17} /> Send enquiry by email</button>
+          </form>
           <div className="flex justify-center gap-5 mb-10">
             <a
               href={siteConfig.instagramUrl}
@@ -401,6 +429,14 @@ export default function App() {
               aria-label="Instagram"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+            </a>
+            <a
+              href={siteConfig.instagramMessageUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="contact-instagram-link"
+            >
+              Message on Instagram
             </a>
             <a
               href={`mailto:${siteConfig.contactEmail}`}

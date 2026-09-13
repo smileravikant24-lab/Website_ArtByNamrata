@@ -137,6 +137,61 @@ body {
   background: #e8d48b;
 }
 
+.inquiry-instagram,
+.contact-instagram-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  border: 1px solid rgba(201, 168, 76, 0.55);
+  border-radius: 999px;
+  color: #e8d48b;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+.inquiry-instagram:hover,
+.contact-instagram-link:hover {
+  color: #fff;
+  border-color: #e8d48b;
+  background: rgba(201, 168, 76, 0.12);
+}
+
+.contact-form {
+  display: grid;
+  gap: 0.8rem;
+  width: min(100%, 34rem);
+  margin: 0 auto 2.5rem;
+}
+
+.contact-form input,
+.contact-form textarea {
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 0.65rem;
+  padding: 0.85rem 1rem;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.06);
+  font: inherit;
+  outline: none;
+}
+
+.contact-form textarea {
+  resize: vertical;
+}
+
+.contact-form input:focus,
+.contact-form textarea:focus {
+  border-color: #c9a84c;
+}
+
+.contact-form .inquiry-button {
+  width: 100%;
+}
+
 .lightbox-close,
 .lightbox-arrow {
   position: absolute;
