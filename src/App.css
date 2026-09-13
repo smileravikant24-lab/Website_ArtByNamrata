@@ -93,6 +93,50 @@ body {
   font-weight: 500;
 }
 
+.artwork-inquiry {
+  display: grid;
+  gap: 0.7rem;
+  width: min(100%, 34rem);
+  margin: 1rem auto 0;
+}
+
+.artwork-inquiry textarea {
+  width: 100%;
+  resize: vertical;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 0.65rem;
+  padding: 0.8rem 0.9rem;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+  font: inherit;
+  outline: none;
+}
+
+.artwork-inquiry textarea:focus {
+  border-color: #c9a84c;
+}
+
+.inquiry-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  border: 0;
+  border-radius: 999px;
+  color: #0a0a0a;
+  background: #c9a84c;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.inquiry-button:hover {
+  background: #e8d48b;
+}
+
 .lightbox-close,
 .lightbox-arrow {
   position: absolute;

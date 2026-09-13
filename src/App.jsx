@@ -2,9 +2,9 @@ import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Palette, PenTool, BookOpen, Scissors, Mail, ChevronDown, Menu, X, ArrowLeft, ArrowRight } from 'lucide-react';
 import './App.css';
-import logoImg from './assets/logo.png';
 import { sectionImages } from './data/imageConfig';
 import { loadFolderImages } from './data/driveFolders';
+import { siteConfig } from './data/siteConfig';
 
 export default function App() {
   const [scrolled, setScrolled] = useState(false);
@@ -13,6 +13,7 @@ export default function App() {
   const [categories, setCategories] = useState(sectionImages.gallery);
   const [activeImage, setActiveImage] = useState(null);
   const [activePage, setActivePage] = useState(window.location.hash.slice(1) || 'home');
+  const [message, setMessage] = useState('');
 
   const changeImage = useCallback((direction) => {
     if (!activeImage) return;
@@ -21,6 +22,11 @@ export default function App() {
     const nextIndex = (activeImage.index + direction + category.images.length) % category.images.length;
     setActiveImage({ categoryId: category.id, index: nextIndex });
   }, [activeImage, categories]);
+
+  useEffect(() => {
+    document.title = `${siteConfig.brandName} | Original Artworks & Commissions`;
+    document.querySelector('link[rel="icon"]')?.setAttribute('href', siteConfig.logoUrl);
+  }, []);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
@@ -124,6 +130,23 @@ export default function App() {
     window.location.hash = href.slice(1);
   };
 
+  const activeArtwork = activeImage && categories
+    .find((category) => category.id === activeImage.categoryId)?.images[activeImage.index];
+
+  const emailArtwork = () => {
+    if (!activeArtwork) return;
+    const subject = `Artwork enquiry: ${activeArtwork.title}`;
+    const body = [
+      `Hello Namrata,`,
+      '',
+      `I am interested in: ${activeArtwork.title}`,
+      `Image link: ${activeArtwork.img}`,
+      '',
+      message || 'Please share more details about this artwork.',
+    ].join('\n');
+    window.location.href = `mailto:${siteConfig.contactEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  };
+
   return (
     <div className="site-shell text-gray-200 min-h-screen font-sans selection:bg-art-gold selection:text-black">
       {/* Navigation */}
@@ -131,8 +154,8 @@ export default function App() {
         <div className="max-w-7xl mx-auto px-6 md:px-12 flex items-center justify-between">
           <a href="#home" onClick={(e) => scrollTo(e, '#home')}>
             <img
-              src={logoImg}
-              alt="Art By Namrata"
+              src={siteConfig.logoUrl}
+              alt={siteConfig.brandName}
               className="h-12 md:h-14 w-auto object-contain"
             />
           </a>
@@ -188,8 +211,8 @@ export default function App() {
           className="max-w-3xl"
         >
           <img
-            src={logoImg}
-            alt="Art By Namrata"
+            src={siteConfig.logoUrl}
+            alt={siteConfig.brandName}
             className="w-64 md:w-80 mx-auto mb-10 drop-shadow-2xl"
           />
           <p className="text-lg md:text-xl text-gray-400 font-light leading-relaxed max-w-xl mx-auto">
@@ -294,6 +317,18 @@ export default function App() {
             <figure className="lightbox-figure" onClick={(event) => event.stopPropagation()}>
               <img src={art.img} alt={art.title} />
               <figcaption><span>{category.title}</span><strong>{art.title}</strong></figcaption>
+              <div className="artwork-inquiry">
+                <textarea
+                  value={message}
+                  onChange={(event) => setMessage(event.target.value)}
+                  placeholder="Write your enquiry or custom request..."
+                  aria-label="Artwork enquiry message"
+                  rows="3"
+                />
+                <button type="button" className="inquiry-button" onClick={emailArtwork}>
+                  <Mail size={17} /> Email this artwork
+                </button>
+              </div>
             </figure>
             <button type="button" className="lightbox-arrow lightbox-arrow-right" onClick={(event) => { event.stopPropagation(); changeImage(1); }} aria-label="Next image"><ArrowRight size={24} /></button>
           </div>
@@ -349,8 +384,8 @@ export default function App() {
       {activePage === 'contact' && <footer id="contact" className="py-16 border-t border-white/[0.06]">
         <div className="max-w-7xl mx-auto px-6 md:px-12 text-center">
           <img
-            src={logoImg}
-            alt="Art By Namrata"
+            src={siteConfig.logoUrl}
+            alt={siteConfig.brandName}
             className="w-40 mx-auto mb-6 opacity-80"
           />
           <h2 className="text-2xl md:text-3xl font-serif text-white mb-3">Commission a Custom Work</h2>
@@ -359,14 +394,16 @@ export default function App() {
           </p>
           <div className="flex justify-center gap-5 mb-10">
             <a
-              href="#"
+              href={siteConfig.instagramUrl}
+              target="_blank"
+              rel="noreferrer"
               className="w-11 h-11 rounded-full border border-white/10 flex items-center justify-center text-gray-400 hover:text-art-gold hover:border-art-gold/40 transition-all duration-300"
               aria-label="Instagram"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
             </a>
             <a
-              href="mailto:hello@artbynamrata.com"
+              href={`mailto:${siteConfig.contactEmail}`}
               className="w-11 h-11 rounded-full border border-white/10 flex items-center justify-center text-gray-400 hover:text-art-gold hover:border-art-gold/40 transition-all duration-300"
               aria-label="Email"
             >
