@@ -14,6 +14,7 @@ export default function App() {
   const [activeImage, setActiveImage] = useState(null);
   const [activePage, setActivePage] = useState(window.location.hash.slice(1) || 'home');
   const [message, setMessage] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
   const [contactName, setContactName] = useState('');
   const [contactMessage, setContactMessage] = useState('');
   const [contactStatus, setContactStatus] = useState('');
@@ -264,8 +265,32 @@ export default function App() {
           <span className="text-gray-500 uppercase tracking-widest text-xs hidden md:block">2026</span>
         </div>
 
+        <div className="gallery-filters" role="tablist" aria-label="Filter gallery by category">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={selectedCategory === 'all'}
+            className={selectedCategory === 'all' ? 'gallery-filter active' : 'gallery-filter'}
+            onClick={() => setSelectedCategory('all')}
+          >
+            All works
+          </button>
+          {categories.map((category) => (
+            <button
+              key={category.id}
+              type="button"
+              role="tab"
+              aria-selected={selectedCategory === category.id}
+              className={selectedCategory === category.id ? 'gallery-filter active' : 'gallery-filter'}
+              onClick={() => setSelectedCategory(category.id)}
+            >
+              {category.title}
+            </button>
+          ))}
+        </div>
+
         <div className="space-y-20">
-          {categories.map((category, categoryIndex) => (
+          {categories.filter((category) => selectedCategory === 'all' || category.id === selectedCategory).map((category, categoryIndex) => (
             <motion.div
               key={category.id}
               initial={{ opacity: 0, y: 30 }}

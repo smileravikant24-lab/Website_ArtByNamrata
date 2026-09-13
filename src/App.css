@@ -139,6 +139,45 @@ body {
   text-transform: uppercase;
 }
 
+.gallery-filters {
+  display: flex;
+  gap: 0.55rem;
+  margin: -2rem 0 4rem;
+  overflow-x: auto;
+  padding: 0.25rem 0 0.75rem;
+  scrollbar-width: thin;
+}
+
+.gallery-filter {
+  flex: 0 0 auto;
+  min-height: 2.5rem;
+  padding: 0.65rem 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  color: #9ca3af;
+  background: rgba(255, 255, 255, 0.035);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color 180ms ease, border-color 180ms ease, background 180ms ease;
+}
+
+.gallery-filter:hover,
+.gallery-filter.active {
+  border-color: rgba(232, 212, 139, 0.75);
+  color: #111923;
+  background: #e8d48b;
+}
+
+@media (min-width: 768px) {
+  .gallery-filters {
+    justify-content: center;
+  }
+}
+
 .lightbox {
   position: fixed;
   inset: 0;
