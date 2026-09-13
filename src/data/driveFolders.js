@@ -5,21 +5,37 @@ const driveApiKey = import.meta.env.VITE_GOOGLE_DRIVE_API_KEY;
 export async function loadFolderImages(category) {
   if (!driveApiKey) return category.images;
 
-  const params = new URLSearchParams({
-    q: `'${category.folderId}' in parents and trashed = false and mimeType contains 'image/'`,
-    fields: 'files(id,name,mimeType,modifiedTime)',
-    orderBy: 'name_natural',
-    pageSize: '100',
-    key: driveApiKey,
-  });
+  const files = [];
+  let pageToken;
 
-  const response = await fetch(`https://www.googleapis.com/drive/v3/files?${params}`);
-  if (!response.ok) throw new Error(`Drive API returned ${response.status}`);
+  do {
+    const params = new URLSearchParams({
+      q: `'${category.folderId}' in parents and trashed = false and mimeType contains 'image/'`,
+      fields: 'nextPageToken,files(id,name,mimeType,modifiedTime)',
+      orderBy: 'name_natural',
+      pageSize: '100',
+      key: driveApiKey,
+    });
 
-  const { files = [] } = await response.json();
-  return files.map((file) => ({
+    if (pageToken) params.set('pageToken', pageToken);
+
+    const response = await fetch(`https://www.googleapis.com/drive/v3/files?${params}`);
+    if (!response.ok) throw new Error(`Drive API returned ${response.status}`);
+
+    const data = await response.json();
+    files.push(...(data.files || []));
+    pageToken = data.nextPageToken;
+  } while (pageToken);
+
+  const driveImages = files.map((file) => ({
     id: file.id,
     title: file.name.replace(/\.[^.]+$/, ''),
     img: imageUrl(file.id),
   }));
+
+  const driveImageIds = new Set(driveImages.map((image) => image.id));
+  return [
+    ...driveImages,
+    ...category.images.filter((image) => !driveImageIds.has(image.id)),
+  ];
 }
