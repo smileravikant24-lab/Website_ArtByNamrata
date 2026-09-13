@@ -162,6 +162,8 @@ export default function App() {
     }
   };
 
+  const totalWorks = categories.reduce((total, category) => total + category.images.length, 0);
+
   return (
     <div className="site-shell text-gray-200 min-h-screen font-sans selection:bg-art-gold selection:text-black">
       {/* Navigation */}
@@ -273,7 +275,7 @@ export default function App() {
             className={selectedCategory === 'all' ? 'gallery-filter active' : 'gallery-filter'}
             onClick={() => setSelectedCategory('all')}
           >
-            All works
+            All works ({totalWorks})
           </button>
           {categories.map((category) => (
             <button
