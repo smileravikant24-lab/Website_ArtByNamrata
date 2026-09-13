@@ -212,7 +212,7 @@ export default function App() {
       </nav>
 
       {/* Home Page */}
-      {activePage === 'home' && <section className="min-h-screen flex flex-col justify-center items-center relative px-6 text-center pt-20">
+      {activePage === 'home' && <section className="home-hero min-h-screen flex flex-col justify-center items-center relative px-6 text-center pt-20">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
