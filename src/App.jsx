@@ -224,11 +224,13 @@ export default function App() {
           transition={{ duration: 1 }}
           className="max-w-3xl"
         >
-          <img
-            src={siteConfig.logoUrl}
-            alt={siteConfig.brandName}
-            className="brand-logo brand-logo-hero w-72 md:w-96 mx-auto mb-10 drop-shadow-2xl"
-          />
+          <div className="hero-logo-frame mx-auto mb-10">
+            <img
+              src={siteConfig.logoUrl}
+              alt={siteConfig.brandName}
+              className="brand-logo-hero"
+            />
+          </div>
           <p className="text-lg md:text-xl text-gray-400 font-light leading-relaxed max-w-xl mx-auto">
             Where every stroke tells a story, and colors breathe life into emotions.
           </p>
