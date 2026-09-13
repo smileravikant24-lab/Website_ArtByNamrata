@@ -483,7 +483,7 @@ export default function App() {
             </a>
           </div>
           <p className="text-gray-600 text-xs tracking-wider uppercase">
-            &copy; 2026 Art By Namrata. All Rights Reserved.
+            &copy; 2026 Art by Namrata. All Rights Reserved.
           </p>
         </div>
       </footer>}
