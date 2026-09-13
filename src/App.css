@@ -86,6 +86,10 @@ body {
   z-index: 1;
 }
 
+.home-hero-content {
+  transform: translateY(2.25rem);
+}
+
 .home-hero p {
   color: #d8d5cd;
   text-shadow: 0 2px 18px rgba(0, 0, 0, 0.35);
@@ -328,6 +332,10 @@ body {
 }
 
 @media (max-width: 640px) {
+  .home-hero-content {
+    transform: translateY(1rem);
+  }
+
   .home-hero::before,
   .home-hero::after {
     display: none;

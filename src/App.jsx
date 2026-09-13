@@ -222,7 +222,7 @@ export default function App() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1 }}
-          className="max-w-3xl"
+          className="home-hero-content max-w-3xl"
         >
           <div className="hero-logo-frame mx-auto mb-10">
             <img
