@@ -13,6 +13,20 @@ body {
   position: relative;
 }
 
+.brand-logo {
+  display: block;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center;
+  background: #f8f6f0;
+  box-shadow: 0 0 0 2px rgba(232, 212, 139, 0.72), 0 12px 34px rgba(0, 0, 0, 0.32);
+}
+
+.brand-logo-hero {
+  box-shadow: 0 0 0 3px rgba(232, 212, 139, 0.78), 0 20px 60px rgba(0, 0, 0, 0.42);
+}
+
 .site-shell #gallery {
   border-top: 1px solid rgba(201, 168, 76, 0.14);
   border-bottom: 1px solid rgba(201, 168, 76, 0.14);

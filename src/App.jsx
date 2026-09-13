@@ -170,7 +170,7 @@ export default function App() {
             <img
               src={siteConfig.logoUrl}
               alt={siteConfig.brandName}
-              className="h-12 md:h-14 w-auto object-contain"
+              className="brand-logo h-12 w-12 md:h-14 md:w-14"
             />
           </a>
 
@@ -227,7 +227,7 @@ export default function App() {
           <img
             src={siteConfig.logoUrl}
             alt={siteConfig.brandName}
-            className="w-64 md:w-80 mx-auto mb-10 drop-shadow-2xl"
+            className="brand-logo brand-logo-hero w-64 md:w-80 mx-auto mb-10 drop-shadow-2xl"
           />
           <p className="text-lg md:text-xl text-gray-400 font-light leading-relaxed max-w-xl mx-auto">
             Where every stroke tells a story, and colors breathe life into emotions.
@@ -392,7 +392,7 @@ export default function App() {
           <img
             src={siteConfig.logoUrl}
             alt={siteConfig.brandName}
-            className="w-40 mx-auto mb-6 opacity-80"
+            className="brand-logo w-40 h-40 mx-auto mb-6 opacity-80"
           />
           <h2 className="text-2xl md:text-3xl font-serif text-white mb-3">Commission a Custom Work</h2>
           <p className="text-gray-400 mb-8 max-w-md mx-auto">
