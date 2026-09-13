@@ -25,7 +25,13 @@ body {
 }
 
 .brand-logo-hero {
-  box-shadow: 0 0 0 3px rgba(232, 212, 139, 0.78), 0 20px 60px rgba(0, 0, 0, 0.42);
+  width: min(27rem, 72vw) !important;
+  height: auto;
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  object-fit: contain;
+  filter: drop-shadow(0 0 0.18rem rgba(232, 212, 139, 0.78)) drop-shadow(0 20px 40px rgba(0, 0, 0, 0.42));
 }
 
 .site-shell #gallery {
