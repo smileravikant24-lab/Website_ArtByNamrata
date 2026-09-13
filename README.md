@@ -14,3 +14,17 @@ The React Compiler is not enabled on this template because of its impact on dev 
 ## Expanding the ESLint configuration
 
 If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+
+## Google Drive Images
+
+The gallery is configured section-wise in `src/data/imageConfig.js` with five Drive categories: Acrylic, Calligraphy, Oil Pastel, Project Work, and Sketch. Clicking an image opens a category-only lightbox with previous/next navigation.
+
+Each image uses its Google Drive file ID and renders through Google's public image endpoint. Keep each file's General access set to **Anyone with the link** with **Viewer** access.
+
+To automatically discover new images added to those Drive folders, create a Google API key with the **Google Drive API** enabled and place it in a local `.env` file:
+
+```env
+VITE_GOOGLE_DRIVE_API_KEY=your_key_here
+```
+
+The app then reads image files from each configured folder, sorts them naturally by filename, and arranges the category grid automatically. Without the key, the checked-in public image list remains available as a fallback. Never commit the `.env` file.

@@ -1,13 +1,26 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { Palette, PenTool, BookOpen, Scissors, Mail, ChevronDown, Menu, X } from 'lucide-react';
+import { Palette, PenTool, BookOpen, Scissors, Mail, ChevronDown, Menu, X, ArrowLeft, ArrowRight } from 'lucide-react';
 import './App.css';
 import logoImg from './assets/logo.png';
+import { sectionImages } from './data/imageConfig';
+import { loadFolderImages } from './data/driveFolders';
 
 export default function App() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [failedImages, setFailedImages] = useState({});
+  const [categories, setCategories] = useState(sectionImages.gallery);
+  const [activeImage, setActiveImage] = useState(null);
+  const [activePage, setActivePage] = useState(window.location.hash.slice(1) || 'home');
+
+  const changeImage = useCallback((direction) => {
+    if (!activeImage) return;
+    const category = categories.find((item) => item.id === activeImage.categoryId);
+    if (!category) return;
+    const nextIndex = (activeImage.index + direction + category.images.length) % category.images.length;
+    setActiveImage({ categoryId: category.id, index: nextIndex });
+  }, [activeImage, categories]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
@@ -15,12 +28,48 @@ export default function App() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  const artworks = [
-    { id: 1, title: "Abstract Whispers", medium: "Watercolor on Paper", img: "https://images.unsplash.com/photo-1541961017774-22349e4a1262?q=80&w=800&auto=format&fit=crop" },
-    { id: 2, title: "Ocean's Depth", medium: "Acrylic on Canvas", img: "https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?q=80&w=800&auto=format&fit=crop" },
-    { id: 3, title: "Golden Hour", medium: "Oil Pastel", img: "https://images.unsplash.com/photo-1500462918059-b1a0cb512f1d?q=80&w=800&auto=format&fit=crop" },
-    { id: 4, title: "Urban Soul", medium: "Pencil Sketch", img: "https://images.unsplash.com/photo-1579783901586-d88db74b4fe4?q=80&w=800&auto=format&fit=crop" },
-  ];
+  useEffect(() => {
+    const onHashChange = () => {
+      setActivePage(window.location.hash.slice(1) || 'home');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+    window.addEventListener('hashchange', onHashChange);
+    return () => window.removeEventListener('hashchange', onHashChange);
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    const syncDriveImages = async () => {
+      const nextCategories = await Promise.all(sectionImages.gallery.map(async (category) => {
+        try {
+          return { ...category, images: await loadFolderImages(category) };
+        } catch {
+          return category;
+        }
+      }));
+
+      if (!cancelled) setCategories(nextCategories);
+    };
+
+    syncDriveImages();
+    const refreshTimer = window.setInterval(syncDriveImages, 60_000);
+
+    return () => {
+      cancelled = true;
+      window.clearInterval(refreshTimer);
+    };
+  }, []);
+
+  useEffect(() => {
+    const onKeyDown = (event) => {
+      if (!activeImage) return;
+      if (event.key === 'Escape') setActiveImage(null);
+      if (event.key === 'ArrowLeft') changeImage(-1);
+      if (event.key === 'ArrowRight') changeImage(1);
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [activeImage, changeImage]);
 
   const serviceCategories = [
     {
@@ -63,6 +112,7 @@ export default function App() {
   ];
 
   const navLinks = [
+    { label: "Home", href: "#home" },
     { label: "Gallery", href: "#gallery" },
     { label: "Services", href: "#services" },
     { label: "Contact", href: "#contact" },
@@ -71,15 +121,15 @@ export default function App() {
   const scrollTo = (e, href) => {
     e.preventDefault();
     setMenuOpen(false);
-    document.querySelector(href)?.scrollIntoView({ behavior: 'smooth' });
+    window.location.hash = href.slice(1);
   };
 
   return (
-    <div className="bg-art-dark text-gray-200 min-h-screen font-sans selection:bg-art-gold selection:text-black">
+    <div className="site-shell text-gray-200 min-h-screen font-sans selection:bg-art-gold selection:text-black">
       {/* Navigation */}
       <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'nav-scrolled py-3' : 'py-5'}`}>
         <div className="max-w-7xl mx-auto px-6 md:px-12 flex items-center justify-between">
-          <a href="#" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>
+          <a href="#home" onClick={(e) => scrollTo(e, '#home')}>
             <img
               src={logoImg}
               alt="Art By Namrata"
@@ -129,8 +179,8 @@ export default function App() {
         )}
       </nav>
 
-      {/* Hero Section */}
-      <section className="min-h-screen flex flex-col justify-center items-center relative px-6 text-center pt-20">
+      {/* Home Page */}
+      {activePage === 'home' && <section className="min-h-screen flex flex-col justify-center items-center relative px-6 text-center pt-20">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -171,55 +221,87 @@ export default function App() {
         >
           <ChevronDown size={28} className="text-art-gold/60" />
         </motion.div>
-      </section>
+      </section>}
 
       {/* Gallery Section */}
-      <section id="gallery" className="py-24 px-6 md:px-12 max-w-7xl mx-auto">
+      {activePage === 'gallery' && <section id="gallery" className="py-24 px-6 md:px-12 max-w-7xl mx-auto">
         <div className="flex justify-between items-end mb-14">
           <div>
             <span className="text-art-gold uppercase tracking-[0.3em] text-xs font-semibold">Portfolio</span>
-            <h2 className="text-3xl md:text-5xl font-serif text-white mt-2">Selected Works</h2>
+            <h2 className="text-3xl md:text-5xl font-serif text-white mt-2">Works by Category</h2>
           </div>
           <span className="text-gray-500 uppercase tracking-widest text-xs hidden md:block">2026</span>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-          {artworks.map((art, index) => (
+        <div className="space-y-20">
+          {categories.map((category, categoryIndex) => (
             <motion.div
-              key={art.id}
+              key={category.id}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
+              transition={{ duration: 0.6, delay: categoryIndex * 0.08 }}
               viewport={{ once: true }}
-              className="group relative overflow-hidden rounded-2xl cursor-pointer bg-art-dark-card"
             >
-              {failedImages[art.id] ? (
-                <div className="w-full h-[350px] md:h-[500px] flex flex-col items-center justify-center gap-4 bg-gradient-to-br from-art-dark-card to-black">
-                  <Palette size={32} className="text-art-gold/40" />
-                  <div className="text-center px-6">
-                    <h3 className="text-2xl font-serif text-white">{art.title}</h3>
-                    <p className="text-art-gold text-sm mt-1 tracking-wide">{art.medium}</p>
-                  </div>
+              <div className="flex flex-wrap items-end justify-between gap-4 mb-6">
+                <div>
+                  <h3 className="text-2xl md:text-3xl font-serif text-white">{category.title}</h3>
+                  <p className="text-gray-500 mt-2">{category.description}</p>
                 </div>
-              ) : (
-                <img
-                  src={art.img}
-                  alt={art.title}
-                  onError={() => setFailedImages((prev) => ({ ...prev, [art.id]: true }))}
-                  className="w-full h-[350px] md:h-[500px] object-cover transition-transform duration-700 group-hover:scale-105"
-                />
-              )}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-8">
-                <h3 className="text-2xl font-serif text-white">{art.title}</h3>
-                <p className="text-art-gold text-sm mt-1 tracking-wide">{art.medium}</p>
+                <span className="category-count">{category.images.length} works</span>
+              </div>
+
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+                {category.images.map((art) => (
+                  <button
+                    key={art.id}
+                    type="button"
+                    className="gallery-tile group relative overflow-hidden rounded-2xl bg-art-dark-card aspect-[4/5] text-left"
+                    onClick={() => setActiveImage({ categoryId: category.id, index: category.images.indexOf(art) })}
+                    aria-label={`Open ${art.title}`}
+                  >
+                    {failedImages[art.id] ? (
+                      <div className="w-full h-full flex flex-col items-center justify-center gap-3 bg-gradient-to-br from-art-dark-card to-black p-4 text-center">
+                        <Palette size={28} className="text-art-gold/40" />
+                        <span className="text-sm text-gray-500">Image unavailable</span>
+                      </div>
+                    ) : (
+                      <img
+                        src={art.img}
+                        alt={art.title}
+                        onError={() => setFailedImages((prev) => ({ ...prev, [art.id]: true }))}
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      />
+                    )}
+                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-4 pt-12">
+                      <span className="text-sm text-white">{art.title}</span>
+                    </div>
+                  </button>
+                ))}
               </div>
             </motion.div>
           ))}
         </div>
-      </section>
+      </section>}
+
+      {activeImage && (() => {
+        const category = categories.find((item) => item.id === activeImage.categoryId);
+        const art = category?.images[activeImage.index];
+        if (!category || !art) return null;
+        return (
+          <div className="lightbox" role="dialog" aria-modal="true" aria-label={`${category.title} preview`} onClick={() => setActiveImage(null)}>
+            <button type="button" className="lightbox-close" onClick={() => setActiveImage(null)} aria-label="Close image preview"><X size={24} /></button>
+            <button type="button" className="lightbox-arrow lightbox-arrow-left" onClick={(event) => { event.stopPropagation(); changeImage(-1); }} aria-label="Previous image"><ArrowLeft size={24} /></button>
+            <figure className="lightbox-figure" onClick={(event) => event.stopPropagation()}>
+              <img src={art.img} alt={art.title} />
+              <figcaption><span>{category.title}</span><strong>{art.title}</strong></figcaption>
+            </figure>
+            <button type="button" className="lightbox-arrow lightbox-arrow-right" onClick={(event) => { event.stopPropagation(); changeImage(1); }} aria-label="Next image"><ArrowRight size={24} /></button>
+          </div>
+        );
+      })()}
 
       {/* Services & Pricing Section */}
-      <section id="services" className="py-24 px-6 md:px-12 max-w-7xl mx-auto">
+      {activePage === 'services' && <section id="services" className="py-24 px-6 md:px-12 max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -261,10 +343,10 @@ export default function App() {
             </motion.div>
           ))}
         </div>
-      </section>
+      </section>}
 
       {/* Contact / Footer */}
-      <footer id="contact" className="py-16 border-t border-white/[0.06]">
+      {activePage === 'contact' && <footer id="contact" className="py-16 border-t border-white/[0.06]">
         <div className="max-w-7xl mx-auto px-6 md:px-12 text-center">
           <img
             src={logoImg}
@@ -295,7 +377,7 @@ export default function App() {
             &copy; 2026 Art By Namrata. All Rights Reserved.
           </p>
         </div>
-      </footer>
+      </footer>}
     </div>
   );
 }
