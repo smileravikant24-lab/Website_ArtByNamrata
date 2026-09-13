@@ -16,6 +16,7 @@ export default function App() {
   const [message, setMessage] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [contactName, setContactName] = useState('');
+  const [contactPhone, setContactPhone] = useState('');
   const [contactMessage, setContactMessage] = useState('');
   const [contactStatus, setContactStatus] = useState('');
 
@@ -141,6 +142,11 @@ export default function App() {
       return;
     }
 
+    if (!/^\d{10}$/.test(contactPhone)) {
+      setContactStatus('Please enter a valid 10-digit mobile number.');
+      return;
+    }
+
     setContactStatus('Sending...');
     try {
       await fetch(siteConfig.contactSheetEndpoint, {
@@ -149,12 +155,14 @@ export default function App() {
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify({
           name: contactName.trim(),
+          phone: contactPhone,
           message: contactMessage.trim(),
           page: window.location.href,
           submittedAt: new Date().toISOString(),
         }),
       });
       setContactName('');
+      setContactPhone('');
       setContactMessage('');
       setContactStatus('Thanks, your message has been submitted.');
     } catch {
@@ -433,6 +441,17 @@ export default function App() {
               onChange={(event) => setContactName(event.target.value)}
               placeholder="Your name"
               aria-label="Your name"
+            />
+            <input
+              type="tel"
+              value={contactPhone}
+              onChange={(event) => setContactPhone(event.target.value.replace(/\D/g, '').slice(0, 10))}
+              placeholder="10-digit mobile number"
+              aria-label="10-digit mobile number"
+              inputMode="numeric"
+              pattern="[0-9]{10}"
+              maxLength="10"
+              required
             />
             <textarea
               value={contactMessage}
