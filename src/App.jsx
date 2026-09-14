@@ -368,7 +368,17 @@ export default function App() {
                   aria-label="Artwork enquiry message"
                   rows="3"
                 />
-                <a className="inquiry-instagram" href={siteConfig.instagramMessageUrl} target="_blank" rel="noreferrer">
+                <a
+                  className="inquiry-instagram"
+                  href={siteConfig.instagramMessageUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  onClick={() => {
+                    const fullMessage = `Hi! I'm interested in "${art.title}" from the ${category.title} collection.\nArtwork link: ${art.img}\n\n${message}`;
+                    navigator.clipboard.writeText(fullMessage);
+                    alert("Message & artwork link copied! Just paste it in the Instagram chat.");
+                  }}
+                >
                   Message on Instagram
                 </a>
               </div>
