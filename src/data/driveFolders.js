@@ -33,9 +33,5 @@ export async function loadFolderImages(category) {
     img: imageUrl(file.id),
   }));
 
-  const driveImageIds = new Set(driveImages.map((image) => image.id));
-  return [
-    ...driveImages,
-    ...category.images.filter((image) => !driveImageIds.has(image.id)),
-  ];
+  return driveImages.length > 0 ? driveImages : category.images;
 }
