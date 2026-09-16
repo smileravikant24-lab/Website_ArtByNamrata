@@ -1,5 +1,6 @@
 const MESSAGES_SHEET_NAME = 'Messages';
 const VISITS_SHEET_NAME = 'Visits';
+const LIKES_SHEET_NAME = 'Likes';
 const DASHBOARD_SHEET_NAME = 'Dashboard';
 const TIMEZONE = 'Asia/Kolkata';
 
@@ -9,12 +10,17 @@ function doPost(event) {
     spreadsheet.setSpreadsheetTimeZone(TIMEZONE);
     const data = JSON.parse(event.postData?.contents || '{}');
 
-    // 1. Site Visit / Hit Tracker
+    // 1. Like Artwork Action
+    if (data.type === 'like' || data.action === 'like') {
+      return recordLike(spreadsheet, data);
+    }
+
+    // 2. Site Visit / Hit Tracker
     if (data.type === 'visit') {
       return recordVisit(spreadsheet, data);
     }
 
-    // 2. Contact Form Message
+    // 3. Default: Contact Form Message
     return recordMessage(spreadsheet, data);
   } catch (error) {
     return ContentService
@@ -32,13 +38,68 @@ function getFormattedIstNow() {
   };
 }
 
+function recordLike(spreadsheet, data) {
+  const imageId = data.imageId;
+  if (!imageId) {
+    return ContentService
+      .createTextOutput(JSON.stringify({ ok: false, error: 'Missing imageId' }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
+  let sheet = spreadsheet.getSheetByName(LIKES_SHEET_NAME);
+  if (!sheet) {
+    sheet = spreadsheet.insertSheet(LIKES_SHEET_NAME);
+  }
+
+  if (sheet.getLastRow() === 0) {
+    const headers = ['Image ID', 'Artwork Title', 'Total Likes', 'Last Liked At (IST)'];
+    sheet.appendRow(headers);
+    const headerRange = sheet.getRange(1, 1, 1, headers.length);
+    headerRange.setFontWeight('bold');
+    headerRange.setBackground('#BE185D');
+    headerRange.setFontColor('#F8FAFC');
+    sheet.setFrozenRows(1);
+    sheet.setColumnWidth(1, 180);
+    sheet.setColumnWidth(2, 200);
+  }
+
+  const ist = getFormattedIstNow();
+  const lastRow = sheet.getLastRow();
+  let foundRow = -1;
+  let currentLikes = 0;
+
+  if (lastRow > 1) {
+    const ids = sheet.getRange(2, 1, lastRow - 1, 1).getValues();
+    for (let i = 0; i < ids.length; i++) {
+      if (ids[i][0] === imageId) {
+        foundRow = i + 2;
+        break;
+      }
+    }
+  }
+
+  if (foundRow > 1) {
+    currentLikes = Number(sheet.getRange(foundRow, 3).getValue()) || 0;
+    currentLikes += 1;
+    sheet.getRange(foundRow, 3).setValue(currentLikes);
+    sheet.getRange(foundRow, 4).setValue(ist.full);
+    if (data.title) sheet.getRange(foundRow, 2).setValue(data.title);
+  } else {
+    currentLikes = 1;
+    sheet.appendRow([imageId, data.title || 'Artwork', 1, ist.full]);
+  }
+
+  return ContentService
+    .createTextOutput(JSON.stringify({ ok: true, likes: currentLikes }))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
 function recordVisit(spreadsheet, data) {
   let sheet = spreadsheet.getSheetByName(VISITS_SHEET_NAME);
   if (!sheet) {
     sheet = spreadsheet.insertSheet(VISITS_SHEET_NAME);
   }
 
-  // Setup headers if sheet is newly created
   if (sheet.getLastRow() === 0) {
     const headers = [
       'Time (IST)',
@@ -128,7 +189,6 @@ function ensureDashboardSheet(spreadsheet) {
     dash.getRange('A1').setValue('📊 Website Traffic & Hit Analytics');
     dash.getRange('A1').setFontWeight('bold').setFontSize(14).setBackground('#1E293B').setFontColor('#F8FAFC');
 
-    // Metrics
     const todayStr = Utilities.formatDate(new Date(), TIMEZONE, 'dd-MMM-yyyy');
     const metrics = [
       ['Total Hits / Pageviews', '=IFERROR(COUNTA(Visits!A2:A), 0)'],
@@ -139,11 +199,12 @@ function ensureDashboardSheet(spreadsheet) {
       ['Instagram Referrals', '=IFERROR(COUNTIF(Visits!G2:G, "*Instagram*"), 0)'],
       ['Google Search Referrals', '=IFERROR(COUNTIF(Visits!G2:G, "*Google*"), 0)'],
       ['Direct Visits', '=IFERROR(COUNTIF(Visits!G2:G, "Direct"), 0)'],
+      ['Total Artwork Likes', '=IFERROR(SUM(Likes!C2:C), 0)'],
     ];
 
     dash.getRange(3, 1, metrics.length, 2).setValues(metrics);
-    dash.getRange('A3:A10').setFontWeight('bold').setBackground('#F1F5F9');
-    dash.getRange('B3:B10').setFontSize(12).setHorizontalAlignment('center');
+    dash.getRange('A3:A11').setFontWeight('bold').setBackground('#F1F5F9');
+    dash.getRange('B3:B11').setFontSize(12).setHorizontalAlignment('center');
   }
 }
 
@@ -152,15 +213,26 @@ function doGet(event) {
   const visitSheet = spreadsheet.getSheetByName(VISITS_SHEET_NAME);
   const totalHits = visitSheet ? Math.max(0, visitSheet.getLastRow() - 1) : 0;
 
+  const likesMap = {};
+  const likesSheet = spreadsheet.getSheetByName(LIKES_SHEET_NAME);
+  if (likesSheet && likesSheet.getLastRow() > 1) {
+    const rows = likesSheet.getRange(2, 1, likesSheet.getLastRow() - 1, 3).getValues();
+    for (let i = 0; i < rows.length; i++) {
+      const id = rows[i][0];
+      const count = Number(rows[i][2]) || 0;
+      if (id) likesMap[id] = count;
+    }
+  }
+
   return ContentService
     .createTextOutput(JSON.stringify({
       ok: true,
       totalHits: totalHits,
+      likes: likesMap,
     }))
     .setMimeType(ContentService.MimeType.JSON);
 }
 
-// Menu button in Google Sheets to convert old GMT dates into IST with 1 click
 function onOpen() {
   const ui = SpreadsheetApp.getUi();
   ui.createMenu('⚡ Time Tools')

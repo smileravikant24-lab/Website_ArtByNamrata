@@ -20,6 +20,65 @@ export default function App() {
   const [contactPhone, setContactPhone] = useState('');
   const [contactMessage, setContactMessage] = useState('');
   const [contactStatus, setContactStatus] = useState('');
+  const [likesMap, setLikesMap] = useState({});
+  const [likedSet, setLikedSet] = useState(() => {
+    try {
+      const saved = localStorage.getItem('an_liked_ids');
+      return saved ? new Set(JSON.parse(saved)) : new Set();
+    } catch {
+      return new Set();
+    }
+  });
+
+  const toggleLike = useCallback((art, event) => {
+    if (event) event.stopPropagation();
+    const isAlreadyLiked = likedSet.has(art.id);
+    const nextSet = new Set(likedSet);
+
+    let diff = 1;
+    if (isAlreadyLiked) {
+      nextSet.delete(art.id);
+      diff = -1;
+    } else {
+      nextSet.add(art.id);
+    }
+
+    setLikedSet(nextSet);
+    try {
+      localStorage.setItem('an_liked_ids', JSON.stringify(Array.from(nextSet)));
+    } catch {}
+
+    setLikesMap((prev) => ({
+      ...prev,
+      [art.id]: Math.max(0, (prev[art.id] || 0) + diff),
+    }));
+
+    if (!isAlreadyLiked && siteConfig.contactSheetEndpoint) {
+      fetch(siteConfig.contactSheetEndpoint, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({
+          type: 'like',
+          action: 'like',
+          imageId: art.id,
+          title: art.title,
+        }),
+      }).catch(() => {});
+    }
+  }, [likedSet]);
+
+  useEffect(() => {
+    if (!siteConfig.contactSheetEndpoint) return;
+    fetch(siteConfig.contactSheetEndpoint)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.likes) {
+          setLikesMap(data.likes);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const changeImage = useCallback((direction) => {
     if (!activeImage) return;
@@ -530,6 +589,28 @@ export default function App() {
                     onClick={() => setActiveImage({ categoryId: category.id, index: category.images.indexOf(art) })}
                     aria-label={`Open ${art.title}`}
                   >
+                    {/* Like Badge */}
+                    <div className="absolute top-3 right-3 z-10">
+                      <button
+                        type="button"
+                        onClick={(e) => toggleLike(art, e)}
+                        className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full backdrop-blur-md transition-all duration-300 ${
+                          likedSet.has(art.id)
+                            ? 'bg-red-500/25 text-red-400 border border-red-500/60 shadow-lg shadow-red-500/20'
+                            : 'bg-black/60 text-gray-300 border border-white/15 hover:border-art-gold/50 hover:text-white'
+                        }`}
+                        aria-label={`Like ${art.title}`}
+                      >
+                        <Heart
+                          size={14}
+                          className={`transition-transform duration-300 ${
+                            likedSet.has(art.id) ? 'fill-red-500 text-red-500 scale-110' : ''
+                          }`}
+                        />
+                        <span className="text-xs font-semibold">{likesMap[art.id] || 0}</span>
+                      </button>
+                    </div>
+
                     {failedImages[art.id] ? (
                       <div className="w-full h-full flex flex-col items-center justify-center gap-3 bg-gradient-to-br from-art-dark-card to-black p-4 text-center">
                         <Palette size={28} className="text-art-gold/40" />
@@ -566,6 +647,21 @@ export default function App() {
               <img src={art.img} alt={art.title} />
               <div className="lightbox-panel">
                 <div className="lightbox-caption"><span>{category.title}</span><strong>{art.title}</strong></div>
+                <button
+                  type="button"
+                  onClick={(e) => toggleLike(art, e)}
+                  className={`flex items-center justify-center gap-2 w-full py-2.5 rounded-xl border text-sm font-semibold transition-all duration-300 ${
+                    likedSet.has(art.id)
+                      ? 'bg-red-500/20 text-red-400 border-red-500/40 shadow-md shadow-red-500/10'
+                      : 'bg-white/5 text-gray-300 border-white/15 hover:border-art-gold/40 hover:text-white'
+                  }`}
+                >
+                  <Heart
+                    size={16}
+                    className={likedSet.has(art.id) ? 'fill-red-500 text-red-500 scale-110' : ''}
+                  />
+                  <span>{likedSet.has(art.id) ? 'Liked' : 'Like Artwork'} ({likesMap[art.id] || 0})</span>
+                </button>
                 <textarea
                   value={message}
                   onChange={(event) => setMessage(event.target.value)}
