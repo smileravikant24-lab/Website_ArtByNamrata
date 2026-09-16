@@ -5,6 +5,7 @@ import './App.css';
 import { sectionImages } from './data/imageConfig';
 import { loadDriveCategoriesAndImages } from './data/driveFolders';
 import { siteConfig } from './data/siteConfig';
+import { trackSiteVisit } from './utils/analytics';
 
 export default function App() {
   const [scrolled, setScrolled] = useState(false);
@@ -32,6 +33,10 @@ export default function App() {
     document.title = `${siteConfig.brandName} | Original Artworks & Commissions`;
     document.querySelector('link[rel="icon"]')?.setAttribute('href', siteConfig.logoUrl);
   }, []);
+
+  useEffect(() => {
+    trackSiteVisit(siteConfig.contactSheetEndpoint, activePage);
+  }, [activePage]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
