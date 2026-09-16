@@ -156,11 +156,12 @@ export default function App() {
         mode: 'no-cors',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify({
+          type: 'message',
           name: contactName.trim(),
           phone: contactPhone,
           message: contactMessage.trim(),
           page: window.location.href,
-          submittedAt: new Date().toISOString(),
+          submittedAt: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }),
         }),
       });
       setContactName('');

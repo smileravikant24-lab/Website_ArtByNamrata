@@ -1,24 +1,35 @@
 const MESSAGES_SHEET_NAME = 'Messages';
 const VISITS_SHEET_NAME = 'Visits';
 const DASHBOARD_SHEET_NAME = 'Dashboard';
+const TIMEZONE = 'Asia/Kolkata';
 
 function doPost(event) {
   try {
     const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
-    const data = JSON.parse(event.postData.contents || '{}');
+    spreadsheet.setSpreadsheetTimeZone(TIMEZONE);
+    const data = JSON.parse(event.postData?.contents || '{}');
 
-    // 1. Check if payload is a Site Visit / Hit Tracker
+    // 1. Site Visit / Hit Tracker
     if (data.type === 'visit') {
       return recordVisit(spreadsheet, data);
     }
 
-    // 2. Default: Contact Form Message
+    // 2. Contact Form Message
     return recordMessage(spreadsheet, data);
   } catch (error) {
     return ContentService
       .createTextOutput(JSON.stringify({ ok: false, error: error.toString() }))
       .setMimeType(ContentService.MimeType.JSON);
   }
+}
+
+function getFormattedIstNow() {
+  const now = new Date();
+  return {
+    full: Utilities.formatDate(now, TIMEZONE, 'dd-MMM-yyyy hh:mm:ss a'),
+    date: Utilities.formatDate(now, TIMEZONE, 'dd-MMM-yyyy'),
+    time: Utilities.formatDate(now, TIMEZONE, 'hh:mm:ss a'),
+  };
 }
 
 function recordVisit(spreadsheet, data) {
@@ -30,9 +41,9 @@ function recordVisit(spreadsheet, data) {
   // Setup headers if sheet is newly created
   if (sheet.getLastRow() === 0) {
     const headers = [
-      'Timestamp (IST)',
-      'Date',
-      'Time',
+      'Time (IST)',
+      'Date (IST)',
+      'Clock Time',
       'Page Section',
       'Device',
       'Browser / OS',
@@ -46,17 +57,15 @@ function recordVisit(spreadsheet, data) {
     headerRange.setBackground('#1E293B');
     headerRange.setFontColor('#F8FAFC');
     sheet.setFrozenRows(1);
+    sheet.setColumnWidth(1, 190);
   }
 
-  const now = new Date();
-  const istDate = Utilities.formatDate(now, 'Asia/Kolkata', 'yyyy-MM-dd');
-  const istTime = Utilities.formatDate(now, 'Asia/Kolkata', 'hh:mm:ss a');
-  const istFull = Utilities.formatDate(now, 'Asia/Kolkata', 'yyyy-MM-dd hh:mm:ss a');
+  const ist = getFormattedIstNow();
 
   sheet.appendRow([
-    istFull,
-    istDate,
-    istTime,
+    ist.full,
+    ist.date,
+    ist.time,
     data.page || '#home',
     data.device || 'Unknown',
     data.browser || '',
@@ -65,7 +74,6 @@ function recordVisit(spreadsheet, data) {
     data.visitorId || '',
   ]);
 
-  // Ensure Dashboard tab exists for summary metrics
   ensureDashboardSheet(spreadsheet);
 
   return ContentService
@@ -87,16 +95,16 @@ function recordMessage(spreadsheet, data) {
     headerRange.setBackground('#0F172A');
     headerRange.setFontColor('#F8FAFC');
     sheet.setFrozenRows(1);
+    sheet.setColumnWidth(1, 190);
   } else if (sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0].indexOf('Phone') === -1) {
     sheet.insertColumnAfter(2);
     sheet.getRange(1, 3).setValue('Phone');
   }
 
-  const now = new Date();
-  const istFull = Utilities.formatDate(now, 'Asia/Kolkata', 'yyyy-MM-dd hh:mm:ss a');
+  const ist = getFormattedIstNow();
 
   sheet.appendRow([
-    istFull,
+    ist.full,
     data.name || '',
     data.phone || '',
     data.message || '',
@@ -120,11 +128,12 @@ function ensureDashboardSheet(spreadsheet) {
     dash.getRange('A1').setValue('📊 Website Traffic & Hit Analytics');
     dash.getRange('A1').setFontWeight('bold').setFontSize(14).setBackground('#1E293B').setFontColor('#F8FAFC');
 
-    // Formula-based metrics
+    // Metrics
+    const todayStr = Utilities.formatDate(new Date(), TIMEZONE, 'dd-MMM-yyyy');
     const metrics = [
       ['Total Hits / Pageviews', '=IFERROR(COUNTA(Visits!A2:A), 0)'],
       ['Total Unique Visitors', '=IFERROR(COUNTUNIQUE(Visits!I2:I), 0)'],
-      ['Today\'s Hits', '=IFERROR(COUNTIF(Visits!B2:B, TEXT(NOW(), "yyyy-mm-dd")), 0)'],
+      ['Today\'s Hits', '=IFERROR(COUNTIF(Visits!B2:B, "' + todayStr + '"), 0)'],
       ['Mobile Visitors', '=IFERROR(COUNTIF(Visits!E2:E, "Mobile"), 0)'],
       ['Desktop Visitors', '=IFERROR(COUNTIF(Visits!E2:E, "Desktop"), 0)'],
       ['Instagram Referrals', '=IFERROR(COUNTIF(Visits!G2:G, "*Instagram*"), 0)'],
@@ -149,4 +158,39 @@ function doGet(event) {
       totalHits: totalHits,
     }))
     .setMimeType(ContentService.MimeType.JSON);
+}
+
+// Menu button in Google Sheets to convert old GMT dates into IST with 1 click
+function onOpen() {
+  const ui = SpreadsheetApp.getUi();
+  ui.createMenu('⚡ Time Tools')
+    .addItem('Convert Old GMT Times to IST', 'convertOldGmtToIst')
+    .addToUi();
+}
+
+function convertOldGmtToIst() {
+  const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = spreadsheet.getSheetByName(MESSAGES_SHEET_NAME);
+  if (!sheet) return;
+
+  const lastRow = sheet.getLastRow();
+  if (lastRow < 2) return;
+
+  const range = sheet.getRange(2, 1, lastRow - 1, 1);
+  const values = range.getValues();
+
+  for (let i = 0; i < values.length; i++) {
+    const cellValue = values[i][0];
+    if (typeof cellValue === 'string' && cellValue.includes('Z')) {
+      const parsedDate = new Date(cellValue);
+      if (!isNaN(parsedDate.getTime())) {
+        values[i][0] = Utilities.formatDate(parsedDate, TIMEZONE, 'dd-MMM-yyyy hh:mm:ss a');
+      }
+    } else if (cellValue instanceof Date) {
+      values[i][0] = Utilities.formatDate(cellValue, TIMEZONE, 'dd-MMM-yyyy hh:mm:ss a');
+    }
+  }
+
+  range.setValues(values);
+  SpreadsheetApp.getUi().alert('Purane saare GMT timestamps IST (India Time) mein convert ho gaye hain!');
 }

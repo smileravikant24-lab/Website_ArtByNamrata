@@ -90,7 +90,7 @@ export async function trackSiteVisit(endpoint, pageSection = 'home') {
     browser: getBrowserAndOS(),
     referrer: getReferrerSource(),
     screen: `${window.screen?.width || 0}x${window.screen?.height || 0}`,
-    timestamp: new Date().toISOString(),
+    timestamp: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }),
   };
 
   try {
