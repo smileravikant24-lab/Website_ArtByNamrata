@@ -287,13 +287,13 @@ export default function App() {
               transition={{ duration: 0.6 }}
             >
               <span className="text-art-gold uppercase tracking-[0.3em] text-xs font-semibold">
-                About Namrata Satija
+                About Namrata
               </span>
               <h1 className="text-3xl md:text-5xl font-serif text-white mt-2 mb-3">
                 Welcome to My World of Art
               </h1>
               <p className="text-art-gold/90 text-sm md:text-base font-serif italic tracking-wide mb-4">
-                By Namrata Satija • Fine Artist & Creator
+                By Namrata • Fine Artist & Creator
               </p>
               <div className="w-24 h-0.5 bg-gradient-to-r from-transparent via-art-gold to-transparent mx-auto"></div>
             </motion.div>
@@ -316,13 +316,13 @@ export default function App() {
                 <div className="relative rounded-2xl overflow-hidden border-2 border-art-gold/40 shadow-2xl bg-art-dark-card aspect-[16/10] sm:aspect-[16/9] w-full">
                   <img
                     src={siteConfig.artistImageUrl}
-                    alt="Namrata Satija - Artist"
+                    alt="Namrata - Artist"
                     className="w-full h-full object-cover object-[85%_20%] transition-transform duration-700 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/15 to-transparent"></div>
                   <div className="absolute bottom-4 left-4 right-4 flex flex-wrap items-center justify-between gap-2">
                     <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-black/80 backdrop-blur-md border border-art-gold/50 text-art-gold text-xs tracking-wider uppercase font-semibold">
-                      <Sparkles size={13} /> Namrata Satija • Artist
+                      <Sparkles size={13} /> Namrata • Artist
                     </span>
                     <p className="text-xs text-gray-300 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/70 backdrop-blur-md border border-white/10 font-light">
                       <MapPin size={13} className="text-art-gold" /> North East Delhi, India
@@ -346,7 +346,7 @@ export default function App() {
                   "Art is not just about filling a canvas with colors; it is a medium to give voice to emotions, thoughts, and stories."
                 </p>
                 <p className="mt-3 text-sm md:text-base text-gray-300">
-                  Hailing from North East Delhi, the vibrant culture and surroundings deeply inspire my creative expression. I am <strong className="text-white font-medium">Namrata Satija</strong>, an artist dedicated to crafting strokes that resonate straight from the heart.
+                  Hailing from North East Delhi, the vibrant culture and surroundings deeply inspire my creative expression. I am <strong className="text-white font-medium">Namrata</strong>, an artist dedicated to crafting strokes that resonate straight from the heart.
                 </p>
               </div>
 
