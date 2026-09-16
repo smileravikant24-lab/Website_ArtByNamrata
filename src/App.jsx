@@ -287,11 +287,14 @@ export default function App() {
               transition={{ duration: 0.6 }}
             >
               <span className="text-art-gold uppercase tracking-[0.3em] text-xs font-semibold">
-                About Us
+                About Namrata Satija
               </span>
-              <h1 className="text-3xl md:text-5xl font-serif text-white mt-2 mb-4">
-                Welcome to the World of Art
+              <h1 className="text-3xl md:text-5xl font-serif text-white mt-2 mb-3">
+                Welcome to My World of Art
               </h1>
+              <p className="text-art-gold/90 text-sm md:text-base font-serif italic tracking-wide mb-4">
+                By Namrata Satija • Fine Artist & Creator
+              </p>
               <div className="w-24 h-0.5 bg-gradient-to-r from-transparent via-art-gold to-transparent mx-auto"></div>
             </motion.div>
           </div>
@@ -313,13 +316,13 @@ export default function App() {
                 <div className="relative rounded-2xl overflow-hidden border-2 border-art-gold/40 shadow-2xl bg-art-dark-card aspect-[3/4] w-full">
                   <img
                     src={siteConfig.artistImageUrl}
-                    alt="Namrata - Artist"
+                    alt="Namrata Satija - Artist"
                     className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-transparent"></div>
                   <div className="absolute bottom-6 left-6 right-6">
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/70 backdrop-blur-md border border-art-gold/50 text-art-gold text-xs tracking-wider uppercase font-medium mb-2">
-                      <Sparkles size={13} /> Namrata • Artist
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/75 backdrop-blur-md border border-art-gold/50 text-art-gold text-xs tracking-wider uppercase font-semibold mb-2">
+                      <Sparkles size={13} /> Namrata Satija • Artist
                     </span>
                     <p className="text-sm text-gray-300 flex items-center gap-1.5 font-light">
                       <MapPin size={15} className="text-art-gold" /> North East Delhi, India
@@ -343,7 +346,7 @@ export default function App() {
                   "Art is not just about filling a canvas with colors; it is a medium to give voice to emotions, thoughts, and stories."
                 </p>
                 <p className="mt-3 text-sm md:text-base text-gray-300">
-                  Hailing from North East Delhi, the vibrant culture and surroundings deeply inspire my creative expression. I am Namrata, an artist dedicated to crafting strokes that resonate straight from the heart.
+                  Hailing from North East Delhi, the vibrant culture and surroundings deeply inspire my creative expression. I am <strong className="text-white font-medium">Namrata Satija</strong>, an artist dedicated to crafting strokes that resonate straight from the heart.
                 </p>
               </div>
 
@@ -353,7 +356,7 @@ export default function App() {
                   <Palette size={22} className="text-art-gold" /> My Artistic Journey
                 </h2>
                 <p className="text-gray-300 text-sm md:text-base leading-relaxed">
-                  Ever since childhood, I have felt a deep connection with colors and forms, watching that passion naturally evolve into my identity. Every painting is a journey for me—a quiet space brought to life on canvas. My work reflects the beauty of nature, the depth of human emotions, and the myriad shades of everyday life.
+                  Ever since childhood, I, <span className="text-art-gold font-medium">Namrata</span>, have felt a deep connection with colors and forms, watching that passion naturally evolve into my identity. Every painting is a journey for me—a quiet space brought to life on canvas. My work reflects the beauty of nature, the depth of human emotions, and the myriad shades of everyday life.
                 </p>
               </div>
             </motion.div>
