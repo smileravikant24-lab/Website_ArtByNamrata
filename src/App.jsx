@@ -70,14 +70,20 @@ export default function App() {
 
   useEffect(() => {
     if (!siteConfig.contactSheetEndpoint) return;
-    fetch(siteConfig.contactSheetEndpoint)
-      .then((res) => res.json())
-      .then((data) => {
-        if (data?.likes) {
-          setLikesMap(data.likes);
-        }
-      })
-      .catch(() => {});
+    const fetchLikes = () => {
+      fetch(siteConfig.contactSheetEndpoint)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data?.likes) {
+            setLikesMap((prev) => ({ ...prev, ...data.likes }));
+          }
+        })
+        .catch(() => {});
+    };
+
+    fetchLikes();
+    const likesTimer = window.setInterval(fetchLikes, 15_000);
+    return () => window.clearInterval(likesTimer);
   }, []);
 
   const changeImage = useCallback((direction) => {
@@ -112,6 +118,7 @@ export default function App() {
     return () => window.removeEventListener('hashchange', onHashChange);
   }, []);
 
+  // 15-second Live Auto-Sync for Google Drive Folders & Artwork Images
   useEffect(() => {
     let cancelled = false;
     const syncDriveImages = async () => {
@@ -124,12 +131,36 @@ export default function App() {
     };
 
     syncDriveImages();
-    const refreshTimer = window.setInterval(syncDriveImages, 60_000);
+    const refreshTimer = window.setInterval(syncDriveImages, 15_000);
 
     return () => {
       cancelled = true;
       window.clearInterval(refreshTimer);
     };
+  }, []);
+
+  // Auto-detect new code deployments and soft refresh when site is updated
+  useEffect(() => {
+    let initialVersionTag = null;
+    const checkDeployment = async () => {
+      try {
+        const res = await fetch(window.location.origin + window.location.pathname, {
+          method: 'HEAD',
+          cache: 'no-cache',
+        });
+        const tag = res.headers.get('etag') || res.headers.get('last-modified');
+        if (tag) {
+          if (initialVersionTag && initialVersionTag !== tag) {
+            window.location.reload();
+          } else {
+            initialVersionTag = tag;
+          }
+        }
+      } catch {}
+    };
+
+    const versionCheckTimer = window.setInterval(checkDeployment, 20_000);
+    return () => window.clearInterval(versionCheckTimer);
   }, []);
 
   useEffect(() => {
