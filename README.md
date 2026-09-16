@@ -28,3 +28,13 @@ VITE_GOOGLE_DRIVE_API_KEY=your_key_here
 ```
 
 The app then reads image files from each configured folder, sorts them naturally by filename, and arranges the category grid automatically. Without the key, the checked-in public image list remains available as a fallback. Never commit the `.env` file.
+
+## Contact Messages in Google Sheets
+
+The Contact form does not open an email client. Deploy `google-apps-script/Code.gs` as a Google Apps Script Web App connected to the destination Sheet, set access to **Anyone**, and put its `/exec` URL in `.env`:
+
+```env
+VITE_CONTACT_SHEET_ENDPOINT=https://script.google.com/macros/s/your-deployment-id/exec
+```
+
+The form stores the submission time, name, message, and page URL in the `Messages` sheet. Instagram messaging still requires the visitor to be logged in to Instagram.

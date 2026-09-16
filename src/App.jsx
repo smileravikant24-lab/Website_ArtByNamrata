@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Palette, PenTool, BookOpen, Scissors, Menu, X, ArrowLeft, ArrowRight, Send } from 'lucide-react';
 import './App.css';
 import { sectionImages } from './data/imageConfig';
-import { loadFolderImages } from './data/driveFolders';
+import { loadDriveCategoriesAndImages } from './data/driveFolders';
 import { siteConfig } from './data/siteConfig';
 
 export default function App() {
@@ -51,15 +51,12 @@ export default function App() {
   useEffect(() => {
     let cancelled = false;
     const syncDriveImages = async () => {
-      const nextCategories = await Promise.all(sectionImages.gallery.map(async (category) => {
-        try {
-          return { ...category, images: await loadFolderImages(category) };
-        } catch {
-          return category;
-        }
-      }));
-
-      if (!cancelled) setCategories(nextCategories);
+      try {
+        const nextCategories = await loadDriveCategoriesAndImages(sectionImages.gallery);
+        if (!cancelled && nextCategories.length > 0) setCategories(nextCategories);
+      } catch (err) {
+        console.error('Drive auto-sync error:', err);
+      }
     };
 
     syncDriveImages();

@@ -48,6 +48,14 @@ export const sectionImages = {
       ],
     },
     {
+      id: 'craft',
+      title: 'Craft',
+      folderId: '1SYf66o7FLylIj0g-iuI9x4cPLLSCksl5',
+      description: 'Creative crafting, cut paper work, and custom handcrafts.',
+      folderUrl: 'https://drive.google.com/drive/folders/1SYf66o7FLylIj0g-iuI9x4cPLLSCksl5',
+      images: [],
+    },
+    {
       id: 'sketch',
       title: 'Sketch',
       folderId: '1cQNGw-nExj-I1cg49IwOrQW9PVej4SiM',
