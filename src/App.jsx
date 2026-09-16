@@ -306,26 +306,26 @@ export default function App() {
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
-              className="lg:col-span-5 flex justify-center"
+              className="lg:col-span-6 flex justify-center"
             >
-              <div className="relative w-full max-w-md group">
+              <div className="relative w-full max-w-lg group">
                 {/* Ambient glow */}
                 <div className="absolute -inset-2 bg-gradient-to-tr from-art-gold/30 via-art-gold/10 to-transparent rounded-3xl blur-xl opacity-70 transition-opacity duration-700 group-hover:opacity-100"></div>
 
-                {/* Photo frame */}
-                <div className="relative rounded-2xl overflow-hidden border-2 border-art-gold/40 shadow-2xl bg-art-dark-card aspect-[3/4] w-full">
+                {/* Photo frame aligned for 16:9 photo */}
+                <div className="relative rounded-2xl overflow-hidden border-2 border-art-gold/40 shadow-2xl bg-art-dark-card aspect-[16/10] sm:aspect-[16/9] w-full">
                   <img
                     src={siteConfig.artistImageUrl}
                     alt="Namrata Satija - Artist"
-                    className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
+                    className="w-full h-full object-cover object-[85%_20%] transition-transform duration-700 group-hover:scale-105"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-transparent"></div>
-                  <div className="absolute bottom-6 left-6 right-6">
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/75 backdrop-blur-md border border-art-gold/50 text-art-gold text-xs tracking-wider uppercase font-semibold mb-2">
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/15 to-transparent"></div>
+                  <div className="absolute bottom-4 left-4 right-4 flex flex-wrap items-center justify-between gap-2">
+                    <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-black/80 backdrop-blur-md border border-art-gold/50 text-art-gold text-xs tracking-wider uppercase font-semibold">
                       <Sparkles size={13} /> Namrata Satija • Artist
                     </span>
-                    <p className="text-sm text-gray-300 flex items-center gap-1.5 font-light">
-                      <MapPin size={15} className="text-art-gold" /> North East Delhi, India
+                    <p className="text-xs text-gray-300 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/70 backdrop-blur-md border border-white/10 font-light">
+                      <MapPin size={13} className="text-art-gold" /> North East Delhi, India
                     </p>
                   </div>
                 </div>
