@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { Palette, PenTool, BookOpen, Scissors, Menu, X, ArrowLeft, ArrowRight, Send } from 'lucide-react';
+import { Palette, PenTool, BookOpen, Scissors, Menu, X, ArrowLeft, ArrowRight, Send, MapPin, Heart, Sparkles, Brush, Quote } from 'lucide-react';
 import './App.css';
 import { sectionImages } from './data/imageConfig';
 import { loadDriveCategoriesAndImages } from './data/driveFolders';
@@ -126,6 +126,7 @@ export default function App() {
 
   const navLinks = [
     { label: "Home", href: "#home" },
+    { label: "About", href: "#about" },
     { label: "Gallery", href: "#gallery" },
     { label: "Services", href: "#services" },
     { label: "Contact", href: "#contact" },
@@ -250,16 +251,23 @@ export default function App() {
           </p>
           <div className="mt-10 flex flex-wrap justify-center gap-4">
             <a
+              href="#about"
+              onClick={(e) => scrollTo(e, '#about')}
+              className="px-8 py-3 bg-art-gold text-art-dark font-semibold text-sm tracking-widest uppercase rounded-full hover:bg-art-gold-light transition-colors duration-300"
+            >
+              About Artist
+            </a>
+            <a
               href="#gallery"
               onClick={(e) => scrollTo(e, '#gallery')}
-              className="px-8 py-3 bg-art-gold text-art-dark font-semibold text-sm tracking-widest uppercase rounded-full hover:bg-art-gold-light transition-colors duration-300"
+              className="px-8 py-3 border border-art-gold/50 text-art-gold font-semibold text-sm tracking-widest uppercase rounded-full hover:bg-art-gold/10 transition-colors duration-300"
             >
               View Gallery
             </a>
             <a
               href="#services"
               onClick={(e) => scrollTo(e, '#services')}
-              className="px-8 py-3 border border-art-gold/50 text-art-gold font-semibold text-sm tracking-widest uppercase rounded-full hover:bg-art-gold/10 transition-colors duration-300"
+              className="px-8 py-3 border border-white/20 text-gray-300 font-semibold text-sm tracking-widest uppercase rounded-full hover:bg-white/10 transition-colors duration-300"
             >
               Services & Pricing
             </a>
@@ -267,6 +275,197 @@ export default function App() {
         </motion.div>
 
       </section>}
+
+      {/* About Us Page */}
+      {activePage === 'about' && (
+        <section id="about" className="py-24 px-6 md:px-12 max-w-7xl mx-auto">
+          {/* Header */}
+          <div className="text-center mb-16">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+            >
+              <span className="text-art-gold uppercase tracking-[0.3em] text-xs font-semibold">
+                About Us
+              </span>
+              <h1 className="text-3xl md:text-5xl font-serif text-white mt-2 mb-4">
+                Welcome to the World of Art
+              </h1>
+              <div className="w-24 h-0.5 bg-gradient-to-r from-transparent via-art-gold to-transparent mx-auto"></div>
+            </motion.div>
+          </div>
+
+          {/* Hero Story Block */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center mb-20">
+            {/* Left: Artist Image with Floating Badges */}
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8 }}
+              className="lg:col-span-5 flex justify-center"
+            >
+              <div className="relative w-full max-w-md group">
+                {/* Ambient glow */}
+                <div className="absolute -inset-2 bg-gradient-to-tr from-art-gold/30 via-art-gold/10 to-transparent rounded-3xl blur-xl opacity-70 transition-opacity duration-700 group-hover:opacity-100"></div>
+
+                {/* Photo frame */}
+                <div className="relative rounded-2xl overflow-hidden border-2 border-art-gold/40 shadow-2xl bg-art-dark-card aspect-[3/4] w-full">
+                  <img
+                    src={siteConfig.artistImageUrl}
+                    alt="Namrata - Artist"
+                    className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-transparent"></div>
+                  <div className="absolute bottom-6 left-6 right-6">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/70 backdrop-blur-md border border-art-gold/50 text-art-gold text-xs tracking-wider uppercase font-medium mb-2">
+                      <Sparkles size={13} /> Namrata • Artist
+                    </span>
+                    <p className="text-sm text-gray-300 flex items-center gap-1.5 font-light">
+                      <MapPin size={15} className="text-art-gold" /> North East Delhi, India
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Right: Narrative Story */}
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="lg:col-span-7 space-y-6 text-gray-300 font-light leading-relaxed"
+            >
+              {/* Highlight Quote */}
+              <div className="relative pl-6 border-l-2 border-art-gold/80 py-1">
+                <Quote size={28} className="text-art-gold/20 absolute -top-3 left-2 -z-10" />
+                <p className="text-lg md:text-xl text-white font-serif italic leading-relaxed">
+                  "Art is not just about filling a canvas with colors; it is a medium to give voice to emotions, thoughts, and stories."
+                </p>
+                <p className="mt-3 text-sm md:text-base text-gray-300">
+                  Hailing from North East Delhi, the vibrant culture and surroundings deeply inspire my creative expression. I am Namrata, an artist dedicated to crafting strokes that resonate straight from the heart.
+                </p>
+              </div>
+
+              {/* My Artistic Journey */}
+              <div className="bg-art-dark-card/70 border border-white/[0.08] rounded-2xl p-6 md:p-8 backdrop-blur-sm shadow-lg">
+                <h2 className="text-xl md:text-2xl font-serif text-white mb-3 flex items-center gap-2.5">
+                  <Palette size={22} className="text-art-gold" /> My Artistic Journey
+                </h2>
+                <p className="text-gray-300 text-sm md:text-base leading-relaxed">
+                  Ever since childhood, I have felt a deep connection with colors and forms, watching that passion naturally evolve into my identity. Every painting is a journey for me—a quiet space brought to life on canvas. My work reflects the beauty of nature, the depth of human emotions, and the myriad shades of everyday life.
+                </p>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* What Inspires Me */}
+          <div className="mb-20">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-center mb-12"
+            >
+              <span className="text-art-gold uppercase tracking-[0.25em] text-xs font-semibold">Creative Pulse</span>
+              <h2 className="text-2xl md:text-4xl font-serif text-white mt-1">What Inspires Me?</h2>
+            </motion.div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* Card 1: Local Roots */}
+              <motion.div
+                initial={{ opacity: 0, y: 25 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+                className="bg-art-dark-card border border-white/[0.08] rounded-2xl p-7 hover:border-art-gold/40 transition-all duration-300 group flex flex-col"
+              >
+                <div className="w-12 h-12 rounded-xl bg-art-gold/10 text-art-gold flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+                  <MapPin size={24} />
+                </div>
+                <h3 className="text-lg font-serif text-white mb-2">Local Roots</h3>
+                <p className="text-gray-400 text-sm leading-relaxed flex-1">
+                  The environment, energy, and surroundings of North East Delhi subtly weave into the essence of my artwork.
+                </p>
+              </motion.div>
+
+              {/* Card 2: Emotions & Expressions */}
+              <motion.div
+                initial={{ opacity: 0, y: 25 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+                className="bg-art-dark-card border border-white/[0.08] rounded-2xl p-7 hover:border-art-gold/40 transition-all duration-300 group flex flex-col"
+              >
+                <div className="w-12 h-12 rounded-xl bg-art-gold/10 text-art-gold flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+                  <Heart size={24} />
+                </div>
+                <h3 className="text-lg font-serif text-white mb-2">Emotions & Expressions</h3>
+                <p className="text-gray-400 text-sm leading-relaxed flex-1">
+                  Human connections, raw feelings, and the serene elements of nature serve as my greatest inspirations.
+                </p>
+              </motion.div>
+
+              {/* Card 3: Textures & Tones */}
+              <motion.div
+                initial={{ opacity: 0, y: 25 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+                className="bg-art-dark-card border border-white/[0.08] rounded-2xl p-7 hover:border-art-gold/40 transition-all duration-300 group flex flex-col"
+              >
+                <div className="w-12 h-12 rounded-xl bg-art-gold/10 text-art-gold flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+                  <Brush size={24} />
+                </div>
+                <h3 className="text-lg font-serif text-white mb-2">Textures & Tones</h3>
+                <p className="text-gray-400 text-sm leading-relaxed flex-1">
+                  I love experimenting with various mediums, playing with acrylics, oils, and watercolors to bring depth and vitality to each piece.
+                </p>
+              </motion.div>
+            </div>
+          </div>
+
+          {/* Vision & Mission Banner */}
+          <motion.div
+            initial={{ opacity: 0, y: 25 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#16202c] via-art-dark-card to-[#0d1219] border border-art-gold/35 p-8 md:p-12 text-center mb-12 shadow-2xl"
+          >
+            <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-art-gold/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div className="relative z-10 max-w-3xl mx-auto">
+              <span className="text-art-gold uppercase tracking-[0.3em] text-xs font-semibold block mb-3">
+                Vision & Mission
+              </span>
+              <h2 className="text-2xl md:text-3xl font-serif text-white mb-4">
+                Bringing Art Into Every Home & Heart
+              </h2>
+              <p className="text-gray-300 text-base md:text-lg font-light leading-relaxed mb-6">
+                "My goal is not merely to display art, but to build a meaningful emotional connection with anyone who views it. Bringing the beauty of art into every home and heart is my ultimate dream."
+              </p>
+              <p className="text-gray-400 text-sm mb-8 leading-relaxed">
+                Thank you for visiting my website and appreciating my journey. If you would like to connect for custom commissions or inquiries, please feel free to reach out!
+              </p>
+              <div className="flex flex-wrap justify-center gap-4">
+                <a
+                  href="#gallery"
+                  onClick={(e) => scrollTo(e, '#gallery')}
+                  className="px-8 py-3 bg-art-gold text-art-dark font-semibold text-sm tracking-widest uppercase rounded-full hover:bg-art-gold-light transition-colors duration-300"
+                >
+                  View Gallery
+                </a>
+                <a
+                  href="#contact"
+                  onClick={(e) => scrollTo(e, '#contact')}
+                  className="px-8 py-3 border border-art-gold/60 text-art-gold font-semibold text-sm tracking-widest uppercase rounded-full hover:bg-art-gold/10 transition-colors duration-300"
+                >
+                  Commission Custom Work
+                </a>
+              </div>
+            </div>
+          </motion.div>
+        </section>
+      )}
 
       {/* Gallery Section */}
       {activePage === 'gallery' && <section id="gallery" className="py-24 px-6 md:px-12 max-w-7xl mx-auto">
